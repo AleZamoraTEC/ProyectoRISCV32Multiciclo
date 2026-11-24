@@ -134,9 +134,21 @@ La configuración del top usa 256 palabras de 32 bits (1 KiB), con lectura combi
 
 1. Crear el proyecto de Vivado fuera del repositorio. Agregar `src/*.v` en **Design Sources** y elegir `riscv_top` como top de diseño. Dejar desmarcada la opción **Copy sources into project** para que Vivado lea los Verilog del repositorio.
 2. Agregar `tb/*.v` y `tb/programa.mem` en **Simulation Sources**. Elegir `tb_riscv_top` como top de simulación. Si XSim reporta que no puede abrir el archivo, comprobar que `programa.mem` esté disponible con ese nombre en el directorio de ejecución de XSim.
-3. Ejecutar **Run Behavioral Simulation → Run All**. Para recompilar después de editar Verilog, usar **Relaunch Simulation**. Para volver a tiempo cero con la misma compilación y registrar las señales ya agregadas, usar **Restart → Run All**.
-4. Abrir [la configuración de ondas de defensa](tb/tb_riscv_top_defensa.wcfg) en la simulación. Si se abre después de correrla, usar **Restart → Run All** para registrar las señales desde el inicio. La onda muestra el flujo de instrucciones, los accesos a memoria, las escrituras a registros y las cuatro palabras de RAM del programa original. Confirmar `PRUEBA EXITOSA` en la consola y revisar `dump_memoria.txt`.
+3. Ejecutar **Run Behavioral Simulation**. Abrir el waveform como se indica abajo y ejecutar **Run All**. Para recompilar después de editar Verilog, usar **Relaunch Simulation**.
+4. Confirmar `PRUEBA EXITOSA` en la consola. Con el `programa.mem` original se ejecutan 47 instrucciones en 193 ciclos. Revisar `dump_memoria.txt` en el directorio de ejecución de XSim.
 
+### Abrir el waveform de defensa
+
+La [configuración de ondas](tb/tb_riscv_top_defensa.wcfg) muestra el flujo de instrucciones, los accesos a memoria, las escrituras a registros y las cuatro palabras de RAM del programa original. Hay dos formas de usarla.
+
+- **Vincularla al proyecto.** Con la simulación abierta, cargar la configuración con el comando de abajo y seleccionar su pestaña. Usar **File → Simulation Waveform → Save Configuration As**, guardarla en la carpeta del proyecto de Vivado y elegir **Yes** cuando Vivado pregunte si querés agregarla al proyecto. Se agrega a `sim_1` y se carga en los siguientes lanzamientos de esa simulación.
+- **Abrirla solo en la sesión actual.** Después de **Run Behavioral Simulation**, pegar este comando en la **Tcl Console**. Sustituir `C:/ruta/RV32I-Multiciclo-GitHub` por la ruta absoluta de tu copia del repositorio. Si la simulación ya avanzó, usar **Restart → Run All** para ver las señales desde el reset.
+
+```tcl
+open_wave_config {C:/ruta/RV32I-Multiciclo-GitHub/tb/tb_riscv_top_defensa.wcfg}
+```
+
+### Resultados del programa original
 
 | Variable | Dirección | Entrada RAM | Valor final |
 |---|---|---|---|
