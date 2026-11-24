@@ -116,7 +116,7 @@ La configuración del top usa 256 palabras de 32 bits (1 KiB), con lectura combi
 
 | Módulo | Función | Testbench |
 |---|---|---|
-| [`riscv_top`](src/riscv_top.v) | Integra la ruta de datos y el control | [`tb_riscv_top`](tb/tb_riscv_top.v) |
+| [`riscv_top`](src/riscv_top.v) | Integra la ruta de datos y el control | [`tb_riscv_auto`](tb/tb_riscv_auto.v) |
 | [`unidad_control`](src/unidad_control.v) | FSM y decodificación de la ALU | [`tb_unidad_control`](tb/tb_unidad_control.v) |
 | [`pc_write_logic`](src/pc_write_logic.v) | Evalúa las ramas y genera `PCWrite` y `PCNext` | [`tb_pc_write_logic`](tb/tb_pc_write_logic.v) |
 | [`pc`](src/pc.v) | Guarda el contador de programa | [`tb_pc`](tb/tb_pc.v) |
@@ -133,26 +133,28 @@ La configuración del top usa 256 palabras de 32 bits (1 KiB), con lectura combi
 ## Verificación en Vivado
 
 1. Crear el proyecto de Vivado fuera del repositorio. Agregar `src/*.v` en **Design Sources** y elegir `riscv_top` como top de diseño. Dejar desmarcada la opción **Copy sources into project** para que Vivado lea los Verilog del repositorio.
-2. Agregar `tb/*.v` y `tb/programa.mem` en **Simulation Sources**. Elegir `tb_riscv_top` como top de simulación. Si XSim reporta que no puede abrir el archivo, comprobar que `programa.mem` esté disponible con ese nombre en el directorio de ejecución de XSim.
+2. Agregar `tb/*.v` y `tb/programa.mem` en **Simulation Sources**. Elegir `tb_riscv_auto` como top de simulación. Si XSim reporta que no puede abrir el archivo, comprobar que `programa.mem` esté disponible con ese nombre en el directorio de ejecución de XSim.
 3. Ejecutar **Run Behavioral Simulation**. Abrir el waveform como se indica abajo y ejecutar **Run All**. Para recompilar después de editar Verilog, usar **Relaunch Simulation**.
-4. Confirmar `PRUEBA EXITOSA` en la consola. Con el `programa.mem` original se ejecutan 47 instrucciones en 193 ciclos. Revisar `dump_memoria.txt` en el directorio de ejecución de XSim.
+4. Confirmar `PRUEBA EXITOSA` y que no aparezca el aviso `MAX_CICLOS`. Con el `programa.mem` original se esperan 47 instrucciones en 193 ciclos. Revisar `dump_memoria.txt` en el directorio de ejecución de XSim.
+
+El modelo de referencia del testbench carga el mismo `.mem` en una RAM separada. Cada vez que el procesador vuelve a `FETCH` tras completar una instrucción, el modelo ejecuta esa instrucción y se comparan el PC, los registros y las 256 palabras de memoria. Si hay diferencias, la consola identifica la instrucción correspondiente. El testbench se detiene si el PC vuelve a cero, un salto vuelve a su propia dirección o se alcanza el límite de ciclos. El límite emite un aviso y puede coexistir con el mensaje de éxito.
 
 ### Abrir el waveform de defensa
 
-La [configuración de ondas](tb/tb_riscv_top_defensa.wcfg) muestra el flujo de instrucciones, los accesos a memoria, las escrituras a registros y las cuatro palabras de RAM del programa original. Hay dos formas de usarla.
+La [configuración de ondas](tb/tb_riscv_auto_defensa.wcfg) usa las señales de `tb_riscv_auto`. Muestra el flujo de instrucciones, los accesos a memoria, las escrituras a registros y las cuatro palabras de RAM del programa original. Hay dos formas de usarla.
 
 - **Vincularla al proyecto.** Con la simulación abierta, cargar la configuración con el comando de abajo y seleccionar su pestaña. Usar **File → Simulation Waveform → Save Configuration As**, guardarla en la carpeta del proyecto de Vivado y elegir **Yes** cuando Vivado pregunte si querés agregarla al proyecto. Se agrega a `sim_1` y se carga en los siguientes lanzamientos de esa simulación.
 - **Abrirla solo en la sesión actual.** Después de **Run Behavioral Simulation**, pegar este comando en la **Tcl Console**. Sustituir `C:/ruta/RV32I-Multiciclo-GitHub` por la ruta absoluta de tu copia del repositorio. Si la simulación ya avanzó, usar **Restart → Run All** para ver las señales desde el reset.
 
 ```tcl
-open_wave_config {C:/ruta/RV32I-Multiciclo-GitHub/tb/tb_riscv_top_defensa.wcfg}
+open_wave_config {C:/ruta/RV32I-Multiciclo-GitHub/tb/tb_riscv_auto_defensa.wcfg}
 ```
 
 ### Prueba de las 16 máscaras de memoria
 
 Para correr la prueba adicional, agregar [tb_memoria_random.v](tb/tb_memoria_random.v) a **Simulation Sources** si todavía no aparece, seleccionar `tb_memoria_random` como top de simulación y usar **Run All**. La prueba limpia las 256 palabras de la RAM y aplica una máscara `WE` distinta en cada una de 16 direcciones pseudoaleatorias, siempre con el dato `0xA1B2C3D4` y la misma semilla.
 
-La consola muestra las 16 direcciones seleccionadas y `dump_tb_memoria_random.txt` lista las 256 palabras con dirección, máscara, valor esperado y valor leído. En el dump, `Probada = 1` identifica las direcciones seleccionadas, incluida la que recibió `WE = 0000`. Por ejemplo, `WE = 1011` debe dejar `0xA100C3D4`. Para volver al programa original, seleccionar `tb_riscv_top` como top de simulación.
+La consola muestra las 16 direcciones seleccionadas y `dump_tb_memoria_random.txt` lista las 256 palabras con dirección, máscara, valor esperado y valor leído. En el dump, `Probada = 1` identifica las direcciones seleccionadas, incluida la que recibió `WE = 0000`. Por ejemplo, `WE = 1011` debe dejar `0xA100C3D4`. Para volver al programa original, seleccionar `tb_riscv_auto` como top de simulación.
 
 ### Resultados del programa original
 
@@ -163,16 +165,9 @@ La consola muestra las 16 direcciones seleccionadas y `dump_tb_memoria_random.tx
 | `i` | `0x3E8` | `RAM[250]` | `0x00000002` |
 | `b` | `0x3EC` | `RAM[251]` | `0x00000002` |
 
-### Cambiar `b` o la dirección de `r`
+### Probar otra imagen de instrucciones
 
-Editá el `programa.mem` que usa Vivado y el parámetro correspondiente al inicio de [tb_riscv_top.v](tb/tb_riscv_top.v). Estos ejemplos mantienen las mismas instrucciones y el mismo recorrido.
-
-| Cambio | En `programa.mem` | En el testbench |
-|---|---|---|
-| Empezar con `b = 7` | En la línea 10 (`0x24`), cambiar `02100793` por `00700793`. | Poner `B_INICIAL = 7`. El testbench comprueba la primera escritura y calcula `(7 << 1) & 0xF = 0xE` al final. |
-| Guardar `r` en `0x3F0` | En la línea 7 (`0x18`), cambiar `FEF42223` por `FEF42823`. El `sw` usa el offset `-16(s0)`. | Poner `DIR_R = 32'h3F0`. Se comprueba `0xC7DF` en esa dirección. Para verla en la onda, agregá `RAM[252]`. |
-
-Volvé a lanzar la simulación con **Relaunch Simulation → Run All**. Los valores de `a` e `i`, el valor de `r` y los conteos de 47 instrucciones y 193 ciclos se mantienen para ambos cambios.
+Reemplazá el `programa.mem` que usa Vivado y ejecutá **Relaunch Simulation → Run All**. `tb_riscv_auto` calcula los resultados esperados a partir de la nueva imagen. El programa debe usar instrucciones que soporten tanto el procesador como el modelo de referencia.
 
 
 

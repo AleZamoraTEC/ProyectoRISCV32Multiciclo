@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+  <wave_state>
+  </wave_state>
+  <db_ref_list>
+    <db_ref path="tb_riscv_auto_behav.wdb" id="1">
+      <top_modules>
+        <top_module name="glbl" />
+        <top_module name="tb_riscv_auto" />
+      </top_modules>
+    </db_ref>
+  </db_ref_list>
+  <zoom_setting>
+    <ZoomStartTime time="0.000 ns">
+    </ZoomStartTime>
+    <ZoomEndTime time="1936.000 ns">
+    </ZoomEndTime>
+    <Cursor1Time time="15.000 ns">
+    </Cursor1Time>
+  </zoom_setting>
+  <column_width_setting>
+    <NameColumnWidth column_width="242">
+    </NameColumnWidth>
+    <ValueColumnWidth column_width="372">
+    </ValueColumnWidth>
+  </column_width_setting>
+  <WVObjectSize size="18" />
+  <wvobject fp_name="/tb_riscv_auto/clk" type="logic">
+    <obj_property name="ElementShortName">clk</obj_property>
+    <obj_property name="ObjectShortName">clk</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/rst" type="logic">
+    <obj_property name="ElementShortName">rst</obj_property>
+    <obj_property name="ObjectShortName">rst</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/ciclos" type="array">
+    <obj_property name="ElementShortName">ciclos[31:0]</obj_property>
+    <obj_property name="ObjectShortName">ciclos[31:0]</obj_property>
+    <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/estado" type="array">
+    <obj_property name="ElementShortName">estado[3:0]</obj_property>
+    <obj_property name="ObjectShortName">estado[3:0]</obj_property>
+    <obj_property name="Radix">BINARYRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/PC" type="array">
+    <obj_property name="ElementShortName">PC[31:0]</obj_property>
+    <obj_property name="ObjectShortName">PC[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/OldPC" type="array">
+    <obj_property name="ElementShortName">OldPC[31:0]</obj_property>
+    <obj_property name="ObjectShortName">OldPC[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/Instr" type="array">
+    <obj_property name="ElementShortName">Instr[31:0]</obj_property>
+    <obj_property name="ObjectShortName">Instr[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/Adr" type="array">
+    <obj_property name="ElementShortName">Adr[31:0]</obj_property>
+    <obj_property name="ObjectShortName">Adr[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/ReadData" type="array">
+    <obj_property name="ElementShortName">ReadData[31:0]</obj_property>
+    <obj_property name="ObjectShortName">ReadData[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/WE" type="array">
+    <obj_property name="ElementShortName">WE[3:0]</obj_property>
+    <obj_property name="ObjectShortName">WE[3:0]</obj_property>
+    <obj_property name="Radix">BINRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/WD" type="array">
+    <obj_property name="ElementShortName">WD[31:0]</obj_property>
+    <obj_property name="ObjectShortName">WD[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/RegWrite" type="logic">
+    <obj_property name="ElementShortName">RegWrite</obj_property>
+    <obj_property name="ObjectShortName">RegWrite</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/rd" type="array">
+    <obj_property name="ElementShortName">rd[4:0]</obj_property>
+    <obj_property name="ObjectShortName">rd[4:0]</obj_property>
+    <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/Result" type="array">
+    <obj_property name="ElementShortName">Result[31:0]</obj_property>
+    <obj_property name="ObjectShortName">Result[31:0]</obj_property>
+    <obj_property name="Radix">HEXRADIX</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/u_mem/RAM[248]" type="array">
+    <obj_property name="ElementShortName">[248][31:0]</obj_property>
+    <obj_property name="ObjectShortName">[248][31:0]</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/u_mem/RAM[249]" type="array">
+    <obj_property name="ElementShortName">[249][31:0]</obj_property>
+    <obj_property name="ObjectShortName">[249][31:0]</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/u_mem/RAM[250]" type="array">
+    <obj_property name="ElementShortName">[250][31:0]</obj_property>
+    <obj_property name="ObjectShortName">[250][31:0]</obj_property>
+  </wvobject>
+  <wvobject fp_name="/tb_riscv_auto/dut/u_mem/RAM[251]" type="array">
+    <obj_property name="ElementShortName">[251][31:0]</obj_property>
+    <obj_property name="ObjectShortName">[251][31:0]</obj_property>
+  </wvobject>
+</wave_config>
