@@ -148,6 +148,12 @@ La [configuración de ondas](tb/tb_riscv_top_defensa.wcfg) muestra el flujo de i
 open_wave_config {C:/ruta/RV32I-Multiciclo-GitHub/tb/tb_riscv_top_defensa.wcfg}
 ```
 
+### Prueba de las 16 máscaras de memoria
+
+Para correr la prueba adicional, agregar [tb_memoria_random.v](tb/tb_memoria_random.v) a **Simulation Sources** si todavía no aparece, seleccionar `tb_memoria_random` como top de simulación y usar **Run All**. La prueba limpia las 256 palabras de la RAM y aplica una máscara `WE` distinta en cada una de 16 direcciones pseudoaleatorias, siempre con el dato `0xA1B2C3D4` y la misma semilla.
+
+La consola muestra las 16 direcciones seleccionadas y `dump_tb_memoria_random.txt` lista las 256 palabras con dirección, máscara, valor esperado y valor leído. En el dump, `Probada = 1` identifica las direcciones seleccionadas, incluida la que recibió `WE = 0000`. Por ejemplo, `WE = 1011` debe dejar `0xA100C3D4`. Para volver al programa original, seleccionar `tb_riscv_top` como top de simulación.
+
 ### Resultados del programa original
 
 | Variable | Dirección | Entrada RAM | Valor final |
