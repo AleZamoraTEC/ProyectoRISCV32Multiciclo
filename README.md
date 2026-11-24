@@ -132,10 +132,10 @@ La configuración del top usa 256 palabras de 32 bits (1 KiB), con lectura combi
 
 ## Verificación en Vivado
 
-1. Agregar `src/*.v` en **Design Sources** y elegir `riscv_top` como top de diseño.
+1. Crear el proyecto de Vivado fuera del repositorio. Agregar `src/*.v` en **Design Sources** y elegir `riscv_top` como top de diseño. Dejar desmarcada la opción **Copy sources into project** para que Vivado lea los Verilog del repositorio.
 2. Agregar `tb/*.v` y `tb/programa.mem` en **Simulation Sources**. Elegir `tb_riscv_top` como top de simulación. Si XSim reporta que no puede abrir el archivo, comprobar que `programa.mem` esté disponible con ese nombre en el directorio de ejecución de XSim.
 3. Ejecutar **Run Behavioral Simulation → Run All**. Para recompilar después de editar Verilog, usar **Relaunch Simulation**. Para volver a tiempo cero con la misma compilación y registrar las señales ya agregadas, usar **Restart → Run All**.
-4. Confirmar `PRUEBA EXITOSA` en la consola y revisar `dump_memoria.txt`.
+4. Abrir [la configuración de ondas de defensa](tb/tb_riscv_top_defensa.wcfg) en la simulación. Si se abre después de correrla, usar **Restart → Run All** para registrar las señales desde el inicio. La onda muestra el flujo de instrucciones, los accesos a memoria, las escrituras a registros y las cuatro palabras de RAM del programa original. Confirmar `PRUEBA EXITOSA` en la consola y revisar `dump_memoria.txt`.
 
 
 | Variable | Dirección | Entrada RAM | Valor final |
@@ -145,7 +145,16 @@ La configuración del top usa 256 palabras de 32 bits (1 KiB), con lectura combi
 | `i` | `0x3E8` | `RAM[250]` | `0x00000002` |
 | `b` | `0x3EC` | `RAM[251]` | `0x00000002` |
 
-`tb_riscv_top` comprueba el programa C incluido, con sus tiempos y valores esperados. Para cambiar el programa durante la defensa, se conserva el RTL y se cambia la imagen de instrucciones. Las expectativas del testbench deben corresponder al programa que se quiera validar. La corrida del C usa `jal` con destino `x0` y `ret` con destino `x0`. La escritura de un enlace en un registro distinto de cero y `JALR` con `rd=rs1` quedan para pruebas integradas dirigidas.
+### Cambiar `b` o la dirección de `r`
+
+Editá el `programa.mem` que usa Vivado y el parámetro correspondiente al inicio de [tb_riscv_top.v](tb/tb_riscv_top.v). Estos ejemplos mantienen las mismas instrucciones y el mismo recorrido.
+
+| Cambio | En `programa.mem` | En el testbench |
+|---|---|---|
+| Empezar con `b = 7` | En la línea 10 (`0x24`), cambiar `02100793` por `00700793`. | Poner `B_INICIAL = 7`. El testbench comprueba la primera escritura y calcula `(7 << 1) & 0xF = 0xE` al final. |
+| Guardar `r` en `0x3F0` | En la línea 7 (`0x18`), cambiar `FEF42223` por `FEF42823`. El `sw` usa el offset `-16(s0)`. | Poner `DIR_R = 32'h3F0`. Se comprueba `0xC7DF` en esa dirección. Para verla en la onda, agregá `RAM[252]`. |
+
+Volvé a lanzar la simulación con **Relaunch Simulation → Run All**. Los valores de `a` e `i`, el valor de `r` y los conteos de 47 instrucciones y 193 ciclos se mantienen para ambos cambios.
 
 
 
