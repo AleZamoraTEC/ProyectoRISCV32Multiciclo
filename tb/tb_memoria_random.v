@@ -1,9 +1,34 @@
 `timescale 1ns / 1ps
+// ^ Unidad de tiempo 1 ns, precision 1 ps.
 
-// Objetivo: comprobar las 16 mascaras de escritura por byte de la RAM.
-// Estimulos: limpiar las 256 palabras y aplicar cada mascara a una direccion
-// distinta, elegida con semilla fija. Todas reciben el mismo dato.
-// Resultado: solo cambian los bytes habilitados. El dump incluye toda la RAM.
+//==============================================================================
+// Testbench: tb_memoria_random
+// Modulo bajo prueba (DUT): memoria
+// Proyecto: Microarquitectura multiciclo RV32I - MT-7003, II Semestre 2026
+//
+// OBJETIVO DE LA PRUEBA:
+//   Complementar tb_memoria comprobando las 16 combinaciones posibles de
+//   WE[3:0] (de 0000 a 1111), y verificar que una escritura NO modifica
+//   ninguna otra palabra de la memoria.
+//
+// ESTIMULOS (en orden):
+//   1. Limpieza: se escriben 0x00000000 con WE = 1111 en las 256 palabras
+//      (0x000 a 0x3FC), usando los puertos del modulo. Despues de cada
+//      escritura se revisa que la palabra quedo en 0.
+//   2. Escrituras: para cada mascara WE = 0000, 0001, ..., 1111 se elige una
+//      direccion distinta con $random y semilla fija (12345), y se escribe el
+//      dato WD = 0xA1B2C3D4. La semilla fija hace la prueba repetible.
+//   3. Revision: se leen las 256 palabras y se comparan con lo esperado.
+//      El resultado de cada palabra se guarda en dump_tb_memoria_random.txt.
+//
+// RESULTADOS ESPERADOS:
+//   - En la palabra que recibio la mascara WE, solo cambian los bytes
+//     habilitados:  esperado = 0xA1B2C3D4 AND {WE[3],WE[2],WE[1],WE[0]} por byte.
+//     Ejemplos: WE = 0000 -> 0x00000000   WE = 0101 -> 0x00B200D4
+//               WE = 1000 -> 0xA1000000   WE = 1111 -> 0xA1B2C3D4
+//   - Las otras 240 palabras siguen en 0x00000000.
+//   - Mensaje final: "PRUEBA EXITOSA: 16 mascaras y 256 palabras verificadas."
+//==============================================================================
 module tb_memoria_random;
     localparam integer DEPTH = 256;
     localparam [31:0] PALABRA = 32'hA1B2_C3D4;

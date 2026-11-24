@@ -13,6 +13,8 @@
 //   5. Las dos lecturas funcionan al mismo tiempo (combinacionales).
 //
 // ESTIMULOS (en orden) Y RESULTADOS ESPERADOS:
+//   B0. reset; leer los 32 registros uno por uno (A1 = 0..31)
+//                                       -> x2 = 0x00000400, todos los demas = 0
 //   B1. reset; leer A1 = x2, A2 = x15  -> RD1 = 0x00000400, RD2 = 0x00000000
 //   B2. escribir x15 (a5) = 0x0000C7DF con WE3 = 1; leer A1 = x15 y A2 = x15
 //                                       -> RD1 = RD2 = 0x0000C7DF (dos lecturas
@@ -31,6 +33,7 @@ module tb_banco_registros;
     wire [31:0] RD1, RD2;         // datos leidos
 
     integer errores = 0;
+    integer k, e0;                // indice del recorrido B0 y errores previos
 
     banco_registros #(.SP_INIT(32'h0000_0400)) dut (
         .clk(clk), .rst(rst), .A1(A1), .A2(A2), .A3(A3),
@@ -68,6 +71,20 @@ module tb_banco_registros;
         // B1: reset
         rst = 1; WE3 = 0; A1 = 5'd2; A2 = 5'd15; A3 = 5'd0; WD3 = 32'b0;
         #12 rst = 0;                        // soltar reset
+
+        // B0: recorrer los 32 registros despues del reset
+        e0 = errores;
+        for (k = 0; k < 32; k = k + 1) begin
+            A1 = k; #1;
+            if (RD1 !== ((k == 2) ? 32'h0000_0400 : 32'h0000_0000)) begin
+                $display("[ERROR] B0  x%0d = 0x%08h despues del reset", k, RD1);
+                errores = errores + 1;
+            end
+        end
+        if (errores == e0)
+            $display("[OK]    B0  x2 = 0x00000400 y los otros 31 registros en 0");
+
+        A1 = 5'd2;
         #1 revisar("B1", 32'h0000_0400, 32'h0000_0000);
 
         // B2: escribir a5 (x15)

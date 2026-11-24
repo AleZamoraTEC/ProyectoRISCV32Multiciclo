@@ -21,6 +21,13 @@
 //   I8   0x0000C7B7  lui a5,0xc         011(U)  0x0000C000 (inmediato U desplazado)
 //   I9   0x03C0006F  jal zero,+60       100(J)  0x0000003C (+60: 0x30 -> 0x6C)
 //   I10  0x01C0006F  jal zero,+28       100(J)  0x0000001C (+28: 0x44 -> 0x60)
+//
+//   Casos extra del formato U (lui), para probar bits altos y extremos:
+//   U1   0x800007B7  lui a5,0x80000     011(U)  0x80000000 (solo bit 31)
+//   U2   0xFFFFF7B7  lui a5,0xFFFFF     011(U)  0xFFFFF000 (los 20 bits en 1)
+//   UR   64 instrucciones lui con los bits [31:7] aleatorios (semilla fija
+//        20261123, repetible).      011(U)  Instr[31:12] seguido de 12 ceros
+//        (se calcula como Instr[31:12] * 4096 y se compara).
 //==============================================================================
 module tb_unidad_signo;
 

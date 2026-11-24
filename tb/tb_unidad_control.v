@@ -28,7 +28,11 @@
 //   C8 jalr (1100111)            0 1 10 12 0        y PCUpdate = 1, Branch = 0 en JALR
 //   C9 bne  (1100011, f3=001)    0 1 13 0           y Branch = 1, ALUControl = 0110
 //   C10 R add (0110011, f3=000, bit30=0) 0 1 6 9 0  y ALUControl = 0010
-//   C11 R sub (0110011, f3=000, bit30=1)             y ALUControl = 0110 en EXECUTER
+//   C11 R sub (0110011, f3=000, bit30=1) 0 1 6 9 0  y ALUControl = 0110 en EXECUTER
+//
+//   Parte 1 recorre las 11 secuencias (en el orden C1..C11).
+//   Parte 2 vuelve a ejecutar instrucciones y, al llegar al estado indicado,
+//   revisa las senales de control de ese estado.
 //==============================================================================
 module tb_unidad_control;
 
@@ -116,11 +120,14 @@ module tb_unidad_control;
         ejecutar("C1",  7'b0000011, 3'b010, 1, 24'h012340);   // lw
         ejecutar("C2",  7'b0100011, 3'b010, 1, 24'h001250);   // sw
         ejecutar("C3",  7'b0010011, 3'b000, 1, 24'h001790);   // addi
+        ejecutar("C4",  7'b0010011, 3'b111, 0, 24'h001790);   // andi
+        ejecutar("C5",  7'b0010011, 3'b001, 0, 24'h001790);   // slli
         ejecutar("C6",  7'b0110111, 3'b000, 0, 24'h000180);   // lui
         ejecutar("C7",  7'b1101111, 3'b000, 0, 24'h001AB0);   // jal
         ejecutar("C8",  7'b1100111, 3'b000, 0, 24'h001AC0);   // jalr
         ejecutar("C9",  7'b1100011, 3'b001, 0, 24'h0001D0);   // bne
         ejecutar("C10", 7'b0110011, 3'b000, 0, 24'h001690);   // add tipo R
+        ejecutar("C11", 7'b0110011, 3'b000, 1, 24'h001690);   // sub tipo R
 
         // ---- 2. Senales en estados especificos
         // C3: addi con bit 30 = 1 debe SUMAR (correccion)
